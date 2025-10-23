@@ -4,6 +4,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
+require('dotenv').config();
 
 // Initialize Express app
 const app = express();
@@ -42,8 +43,10 @@ let products = [
 
 // Root route
 app.get('/', (req, res) => {
-  res.send('Welcome to the Product API! Go to /api/products to see all products.');
+  res.send('Hello World');
 });
+
+
 
 // TODO: Implement the following routes:
 // GET /api/products - Get all products
@@ -56,12 +59,44 @@ app.get('/', (req, res) => {
 app.get('/api/products', (req, res) => {
   res.json(products);
 });
+app.get("/api/products/:id", (req, res) => {
+
+  res.json(products);
+});
+app.post('/api/products', (req, res) => {
+  res.json(products);
+});
+app.put("/api/products/:id", (req, res) => {
+  res.json(products);
+});
+app.delete("/api/products/:id", (req, res) => {
+  res.json(products);
+});
+
+
 
 // TODO: Implement custom middleware for:
 // - Request logging
-// - Authentication
-// - Error handling
+const requestLogger = (req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+};
+app.use(requestLogger);
 
+// - Authentication
+const authenticate = (req, res, next) => {
+  // Dummy authentication logic
+  const authHeader = req.headers['authorization'];  
+// - Error handling
+const errorHandler = (err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+} ;
+  if (authHeader === 'Bearer mysecrettoken') {
+    next();
+  } else {
+    res.status(401).send('Unauthorized');
+  } 
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
